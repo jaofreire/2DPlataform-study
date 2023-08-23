@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Goblin : MonoBehaviour
+public class Goblin : MonoBehaviour, IHit
 {
     private Rigidbody2D Rig;
     private Animator Animation;
@@ -13,14 +13,16 @@ public class Goblin : MonoBehaviour
     [Header("Move")]
     [SerializeField] private float MoveSpd;
     [SerializeField] private float StopDistance;
+    [SerializeField] private bool IsRight;
+    [SerializeField] private bool IsIdle;
     private bool IsMoving;
 
 
 
     [Header("Vision")]
-    [SerializeField] private bool IsRight;
     [SerializeField] private float RayReach;
     [SerializeField] private Transform RayPoint;
+    [SerializeField] private Transform RayPointBehind;
     [SerializeField] private LayerMask PlayerLayer;
     private Vector2 Direc;
 
@@ -34,7 +36,6 @@ public class Goblin : MonoBehaviour
     {
         Animation = GetComponent<Animator>();
         Rig = GetComponent<Rigidbody2D>();
-
     }
 
    
@@ -62,17 +63,25 @@ public class Goblin : MonoBehaviour
             Direc = Vector2.left;
         }
        if (IsMoving)
-       { 
-        
-         if (IsRight)
-         {
-            Rig.velocity = new Vector2(MoveSpd, Rig.velocity.y);
-         }
-         else
-         {
-            Rig.velocity = new Vector2(-MoveSpd, Rig.velocity.y);
-         }
-       }
+       {
+            Animation.SetInteger("Transition", 1);
+
+            if (IsRight)
+            {
+                Rig.velocity = new Vector2(MoveSpd, Rig.velocity.y);
+            }
+            else if (!IsRight)
+            {
+                Rig.velocity = new Vector2(-MoveSpd, Rig.velocity.y);
+            }
+
+            if (IsIdle)
+            {
+                Animation.SetInteger("Transition", 0);
+                Rig.velocity = Vector2.zero;
+                IsMoving = false;
+            }    
+        }
     }
     
 
@@ -84,20 +93,43 @@ public class Goblin : MonoBehaviour
         {
             if (hit.collider.gameObject.CompareTag("Player"))
             {
+                IsIdle = false;
                 IsMoving = true;
-                Debug.Log("É um Player");
+                //Debug.Log("É um Player");
 
                 float Distance = Vector2.Distance(transform.position, hit.transform.position);
 
                 if (Distance <= StopDistance)
                 {
-                    Debug.Log("Encostou");
+                    Animation.SetInteger("Transition", 2);
+                    //Debug.Log("Encostou");
                     IsMoving = false;
                     Rig.velocity = Vector2.zero;
                     OnAttack();
                 }
             }
         }
+        else
+        {
+            IsIdle = true;
+        }
+
+
+        RaycastHit2D HitBehind = Physics2D.Raycast(RayPointBehind.position, -Direc, RayReach);
+        
+
+        if (HitBehind.collider != null)
+        {
+            IsIdle = false;
+            IsMoving = true;
+            if (HitBehind.transform.CompareTag("Player"))
+            {
+                //Debug.Log("ATRAS!!");
+                IsRight = !IsRight;
+            }
+          
+        }
+
     }
 
     void OnAttack()
@@ -112,17 +144,21 @@ public class Goblin : MonoBehaviour
 
     public void OnHit(int damage)
     {
+        Animation.SetTrigger("Hit");
         Life -= damage;
 
         if (Life <= 0)
         {
-            //die;
+            Animation.SetTrigger("Death");
+            Destroy(gameObject, 1f);
         }
     }
+
 
     private void OnDrawGizmos()
     {
         Gizmos.DrawRay(RayPoint.position, Direc * RayReach);
+        Gizmos.DrawRay(RayPointBehind.position, -Direc * RayReach);
         Gizmos.DrawWireSphere(HitBox.position, Radius);
     }
 
@@ -133,4 +169,6 @@ public class Goblin : MonoBehaviour
             PlayerMovement.instance.OnHit(Damage);
         }
     }
+
+
 }

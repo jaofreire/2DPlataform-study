@@ -122,10 +122,14 @@ public class PlayerMovement : MonoBehaviour
 
             if (hit != null)
             {
-                hit.GetComponent<Slime>().OnHit(Damage);
-                
-            }
+                IHit HitEnemy = hit.transform.GetComponent<IHit>();
 
+                if (HitEnemy == null) return;
+
+                HitEnemy.OnHit(Damage);
+
+            }
+          
             StartCoroutine(OnAttack());
         }
     }

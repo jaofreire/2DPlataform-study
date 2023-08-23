@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Slime : MonoBehaviour
+public class Slime : MonoBehaviour, IHit
 {
     private Rigidbody2D Rig;
     private Animator Animation;
@@ -23,7 +23,6 @@ public class Slime : MonoBehaviour
     {
         Rig = GetComponent<Rigidbody2D>();
         Animation = GetComponent<Animator>();
-       
     }
 
     // Update is called once per frame
@@ -72,6 +71,7 @@ public class Slime : MonoBehaviour
         }
         Debug.Log("Atacou");
     }
+
 
     private void OnDrawGizmos()
     {
