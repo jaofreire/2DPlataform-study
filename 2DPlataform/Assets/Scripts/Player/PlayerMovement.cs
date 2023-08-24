@@ -5,16 +5,20 @@ using UnityEngine;
 [RequireComponent(typeof(CapsuleCollider2D))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Components")]
     [SerializeField] private Animator Animation;
+    [SerializeField] private BoxCollider2D Collider;
     private Rigidbody2D Rig;
+    
 
     [SerializeField] private int Life;
 
     [Header("Move")]
     [SerializeField] private float MoveSpd;
     [SerializeField] private float JumpSpd;
-    private int JumpTimes;
+    [SerializeField] private LayerMask LayerGround;
     private bool IsGround;
+    private int JumpTimes;
     private float DirX;
 
     [Header("Attack")]
@@ -30,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        Collider = GetComponent<BoxCollider2D>();
         Rig = GetComponent<Rigidbody2D>();
         instance = this;
     }
@@ -37,8 +42,8 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Jump();
         Attack();
+        Jump();
     }
 
     private void FixedUpdate()
@@ -55,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         switch (DirX)
         {
             default:
-                if (IsGround && !IsAttacking)
+                if (!IsAttacking && IsGround)
                 {
                     Animation.SetInteger("Transition", 0);
                 }
@@ -66,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     transform.eulerAngles = new Vector3(0, 0, 0);
                 }
-                if (IsGround && !IsAttacking)
+                if ( !IsAttacking && IsGround)
                 {
                     Animation.SetInteger("Transition", 1);
                 }
@@ -77,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     transform.eulerAngles = new Vector3(0, 180, 0);
                 }
-                if (IsGround && !IsAttacking)
+                if ( !IsAttacking && IsGround)
                 {
                     Animation.SetInteger("Transition", 1);
                 }
@@ -90,20 +95,27 @@ public class PlayerMovement : MonoBehaviour
     {
         bool JumpButton = Input.GetButtonDown("Jump");
 
-        if (JumpButton && IsGround && JumpTimes == 2)
+
+        if (JumpButton && JumpTimes == 2 && IsGround)
         {
+            JumpTimes = 1;
+            IsGround = false;
             Animation.SetInteger("Transition", 2);
             Rig.AddForce(Vector2.up * JumpSpd, ForceMode2D.Impulse);
-            IsGround = false;
-            JumpTimes = 1;
-           
+            //Debug.Log(JumpTimes);
+            //if (JumpTimes == 1)
+            //{
+            //    Debug.Log("DoubleJump");
+            //}
         }
         else if (JumpButton && JumpTimes == 1)
         {
             Animation.SetInteger("Transition", 2);
             Rig.AddForce(Vector2.up * 7, ForceMode2D.Impulse);
             JumpTimes = 0;
+            //Debug.Log(JumpTimes);
         }
+
     }
 
     void Attack()
@@ -169,11 +181,23 @@ public class PlayerMovement : MonoBehaviour
         StopCoroutine(HitTimeCount());
     }
 
-    
+
+
 
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(HitBoxPoint.position, Radius);
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == 9)
+        {
+            collision.GetComponent<Animator>().SetTrigger("PickUp");
+            Destroy(collision.gameObject, 0.5f);
+            GameController.instance.GetCoin();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -183,5 +207,6 @@ public class PlayerMovement : MonoBehaviour
             IsGround = true;
             JumpTimes = 2;
         }
+
     }
 }

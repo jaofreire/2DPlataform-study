@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Life: 3
+  Drop: {fileID: 2081399018763582613, guid: 16eb11e950a91894cbbc19dd6c7c6c88, type: 3}
   MoveSpd: 5
   StopDistance: 0.5
   IsRight: 0

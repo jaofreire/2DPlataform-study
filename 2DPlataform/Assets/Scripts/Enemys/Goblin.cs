@@ -9,6 +9,7 @@ public class Goblin : MonoBehaviour, IHit
     private Animator Animation;
 
     [SerializeField] private int Life;
+    [SerializeField] private GameObject Drop;
 
     [Header("Move")]
     [SerializeField] private float MoveSpd;
@@ -36,12 +37,6 @@ public class Goblin : MonoBehaviour, IHit
     {
         Animation = GetComponent<Animator>();
         Rig = GetComponent<Rigidbody2D>();
-    }
-
-   
-    void Update()
-    {
-        
     }
 
     private void FixedUpdate()
@@ -146,14 +141,26 @@ public class Goblin : MonoBehaviour, IHit
     {
         Animation.SetTrigger("Hit");
         Life -= damage;
-
+        
         if (Life <= 0)
         {
             Animation.SetTrigger("Death");
             Destroy(gameObject, 1f);
+
+            int prob = Random.Range(0, 5);
+         
+            if (prob >= 3)
+            {
+                DropItem();
+                Debug.Log("Drop");
+            }
         }
     }
 
+    void DropItem()
+    {
+        Instantiate(Drop, transform.position, transform.rotation);
+    }
 
     private void OnDrawGizmos()
     {

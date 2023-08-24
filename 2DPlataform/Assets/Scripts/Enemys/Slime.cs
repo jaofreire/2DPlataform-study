@@ -7,11 +7,15 @@ public class Slime : MonoBehaviour, IHit
     private Rigidbody2D Rig;
     private Animator Animation;
    
-    [SerializeField] private float MoveSpd;
+    
 
+    [Header("Heath/Move")]
     [SerializeField] private int Life;
+    [SerializeField] private float MoveSpd;
     [SerializeField] private int Damage;
+    [SerializeField] private GameObject Drop;
 
+    [Header("Collision")]
     [SerializeField] private Transform PointCollider;
     [SerializeField] private float Radius;
     [SerializeField] private LayerMask Layer;
@@ -62,14 +66,27 @@ public class Slime : MonoBehaviour, IHit
     {
         Animation.SetTrigger("Hit");
         Life -= damage;
-
         if (Life <= 0)
         {
             MoveSpd = 0;
             Animation.SetTrigger("Death");
             Destroy(gameObject, 1f);
+
+            int prob = Random.Range(0, 5);
+
+            if (prob >= 3)
+            {
+                DropItem();
+                Debug.Log("Drop");
+            }
+
         }
         Debug.Log("Atacou");
+    }
+
+    void DropItem()
+    {
+        Instantiate(Drop, transform.position, transform.rotation);
     }
 
 
@@ -82,8 +99,7 @@ public class Slime : MonoBehaviour, IHit
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            PlayerMovement.instance.OnHit(Damage);
-            
+            PlayerMovement.instance.OnHit(Damage);  
         }
     }
 }
