@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BomberGoblin : MonoBehaviour, IHit
 {
     private Animator Animation;
 
     [SerializeField] private int Life;
+    [SerializeField] private bool CanOnHit;
 
     [Header("Attack")]
     [SerializeField] private Transform SpawnBomb;
@@ -22,6 +24,9 @@ public class BomberGoblin : MonoBehaviour, IHit
     [SerializeField] private float RayDistance;
     public bool IsRight;
     private Vector2 Direc;
+
+    [Header("Events")]
+    [SerializeField] private UnityEvent Event;
 
     public static BomberGoblin instance;
 
@@ -46,14 +51,30 @@ public class BomberGoblin : MonoBehaviour, IHit
 
     public void OnHit(int damage)
     {
-        Animation.SetTrigger("Hit");
-        Life -= damage;
-
-        if (Life <= 0)
+        if (CanOnHit)
         {
-            Animation.SetTrigger("Death");
-            Destroy(gameObject, 1f);
+            Animation.SetTrigger("Hit");
+            Life -= damage;
+
+            if (Life == 15 || Life == 10 || Life == 5)
+            {
+                CanOnHit = false;
+                StartCoroutine(TimeHit());
+            }
+
+            if (Life <= 0)
+            {
+                Animation.SetTrigger("Death");
+                Destroy(gameObject, 1f);
+                Event.Invoke();
+            }
         }
+    }
+
+    IEnumerator TimeHit()
+    {
+        yield return new WaitForSeconds(5f);
+        CanOnHit = true;
     }
 
     void ReachPlayer()
@@ -74,7 +95,6 @@ public class BomberGoblin : MonoBehaviour, IHit
 
     }
 
-   
     void ActiveAttack()
     {
 

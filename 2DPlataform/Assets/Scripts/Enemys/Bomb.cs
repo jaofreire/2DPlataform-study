@@ -38,7 +38,7 @@ public class Bomb : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject)
+        if (collision.gameObject.layer == 6)
         {
            GameObject explosion = Instantiate(ExplosionFx, transform.position, transform.rotation);
             Destroy(explosion, 1f);

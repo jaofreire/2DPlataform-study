@@ -81,6 +81,7 @@ public class Worm : MonoBehaviour, IHit
         if (collision.gameObject.layer == 8)
         {
             PlayerMovement.instance.OnHit(Damage);
+            
         }
     }
 
