@@ -48,7 +48,7 @@ public class Button : MonoBehaviour
             IsPressed = true;
             Door.instance.ActiveDoor();
         }
-       
+
     }
 
     private void OnDrawGizmos()

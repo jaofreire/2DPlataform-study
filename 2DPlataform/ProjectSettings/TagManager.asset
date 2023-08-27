@@ -16,7 +16,7 @@ TagManager:
   - Player
   - coin
   - Interactives
-  - 
+  - Props
   - 
   - 
   - 
@@ -46,6 +46,12 @@ TagManager:
     locked: 0
   - name: subsoloBackground
     uniqueID: 249896027
+    locked: 0
+  - name: PropsScenes
+    uniqueID: 2257835123
+    locked: 0
+  - name: Interactives
+    uniqueID: 1793968573
     locked: 0
   - name: Items
     uniqueID: 740318081

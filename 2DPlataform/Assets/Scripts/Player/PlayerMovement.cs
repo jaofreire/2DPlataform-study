@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private Animator Animation;
-    [SerializeField] private BoxCollider2D Collider;
+    //[SerializeField] private BoxCollider2D Collider;
     private Rigidbody2D Rig;
     
 
@@ -24,9 +24,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Attack")]
     [SerializeField] private Transform HitBoxPoint;
     [SerializeField] private float Radius;
-    [SerializeField] private LayerMask EnemyLayer;
     [SerializeField] private float HitCount;
     [SerializeField] private int Damage;
+    [SerializeField] private LayerMask EnemyLayer;
+    [SerializeField] private LayerMask PropsLayer;
     private bool CanHit = true;
     private bool IsAttacking;
 
@@ -34,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        Collider = GetComponent<BoxCollider2D>();
+        //Collider = GetComponent<BoxCollider2D>();
         Rig = GetComponent<Rigidbody2D>();
         instance = this;
     }
@@ -44,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Attack();
         Jump();
+        InteractiveProps();
     }
 
     private void FixedUpdate()
@@ -141,9 +143,30 @@ public class PlayerMovement : MonoBehaviour
                 HitEnemy.OnHit(Damage);
 
             }
-          
+
+            Collider2D hitProps = Physics2D.OverlapCircle(HitBoxPoint.position, Radius, PropsLayer);
+
+            if (hitProps != null)
+            {
+                IProps props = hitProps.transform.GetComponent<IProps>();
+
+                if (props == null) return;
+
+                props.Interactive();
+                Debug.Log("Interagiu");
+
+            }
+
             StartCoroutine(OnAttack());
         }
+
+    }
+
+    void InteractiveProps()
+    {
+        bool AttackButton = Input.GetKeyDown(KeyCode.K);
+
+        
     }
 
     IEnumerator OnAttack()
@@ -180,8 +203,6 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Posso levar dano novamente");
         StopCoroutine(HitTimeCount());
     }
-
-
 
 
     private void OnDrawGizmos()
