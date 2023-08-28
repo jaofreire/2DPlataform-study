@@ -11,11 +11,11 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D Rig;
     
 
-    [SerializeField] private int Life;
+    [SerializeField] public int Life;
 
     [Header("Move")]
-    [SerializeField] private float MoveSpd;
-    [SerializeField] private float JumpSpd;
+    [SerializeField] public float MoveSpd;
+    [SerializeField] public float JumpSpd;
     [SerializeField] private LayerMask LayerGround;
     private bool IsGround;
     private int JumpTimes;
@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform HitBoxPoint;
     [SerializeField] private float Radius;
     [SerializeField] private float HitCount;
-    [SerializeField] private int Damage;
+    [SerializeField] public int Damage;
     [SerializeField] private LayerMask EnemyLayer;
     [SerializeField] private LayerMask PropsLayer;
     private bool CanHit = true;
@@ -33,6 +33,19 @@ public class PlayerMovement : MonoBehaviour
 
     public static PlayerMovement instance;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         //Collider = GetComponent<BoxCollider2D>();

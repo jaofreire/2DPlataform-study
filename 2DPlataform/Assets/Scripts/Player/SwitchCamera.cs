@@ -28,11 +28,22 @@ public class SwitchCamera : MonoBehaviour
             CinemachineVirtualCamera targetCamera = collision.GetComponentInChildren<CinemachineVirtualCamera>();
             SwitchCam(targetCamera);
         }
+
+        if (collision.gameObject.CompareTag("InitialCamera"))
+        {
+            CinemachineVirtualCamera InitialCamera = collision.GetComponentInChildren<CinemachineVirtualCamera>();
+            SwitchCam(InitialCamera);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collisionExit)
     {
         if (collisionExit.gameObject.CompareTag("BossCamera"))
+        {
+            SwitchCam(PlayerCamera);
+        }
+
+        if (collisionExit.gameObject.CompareTag("InitialCamera"))
         {
             SwitchCam(PlayerCamera);
         }

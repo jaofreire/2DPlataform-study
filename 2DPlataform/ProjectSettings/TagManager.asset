@@ -6,6 +6,8 @@ TagManager:
   tags:
   - BossCamera
   - Save
+  - LifePotion
+  - InitialCamera
   layers:
   - Default
   - TransparentFX
