@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private Animator Animation;
-    //[SerializeField] private BoxCollider2D Collider;
     private Rigidbody2D Rig;
     
 
@@ -58,7 +57,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Attack();
         Jump();
-        InteractiveProps();
     }
 
     private void FixedUpdate()
@@ -175,13 +173,6 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    void InteractiveProps()
-    {
-        bool AttackButton = Input.GetKeyDown(KeyCode.K);
-
-        
-    }
-
     IEnumerator OnAttack()
     {
         yield return new WaitForSeconds(0.3f);
@@ -205,8 +196,17 @@ public class PlayerMovement : MonoBehaviour
             if (Life <= 0)
             {
                 Animation.SetTrigger("Death");
+                StartCoroutine(TimeRespawn());
             }
         }
+    }
+    IEnumerator TimeRespawn()
+    {
+        yield return new WaitForSeconds(1f);
+        Animation.SetTrigger("Respawn");
+        CheckPoint.instance.ReturnCheckPoint();
+        Life = Items.instance.TotalLifePlayer;
+        StopCoroutine(TimeRespawn());
     }
 
     IEnumerator HitTimeCount()

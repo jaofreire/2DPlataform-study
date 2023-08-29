@@ -6,8 +6,13 @@ using UnityEngine;
 public class Items : MonoBehaviour
 {
     [SerializeField] private int healValue;
-    [SerializeField] private int TotalLifePlayer;
+    [SerializeField] public int TotalLifePlayer;
 
+    public static Items instance;
+    private void Start()
+    {
+        instance = this;
+    }
     void Heal(int HealValue)
     {
         
